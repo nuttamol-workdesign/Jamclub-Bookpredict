@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="th" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หนังสือแบบไหน ที่ใช่คุณ</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+        }
+        * {
+            font-family: 'Prompt', sans-serif;
+        }
+        .book-cover-container {
+            position: relative;
+            width: 200px;
+            height: 280px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .book-cover-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .book-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #9ca3af;
+            font-size: 3rem;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full bg-gradient-to-br from-orange-50 to-white">
+  <div class="h-full w-full flex flex-col overflow-auto"><!-- Header -->
+   <header class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+     <h1 id="page-title" class="text-3xl font-bold text-center">📚 หนังสือแบบไหน ที่ใช่คุณ</h1>
+    </div>
+   </header><!-- Main Content -->
+   <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl"><!-- Start Screen -->
+    <div id="start-screen" class="bg-white rounded-2xl shadow-xl p-8">
+     <div class="text-center mb-8">
+      <div class="text-6xl mb-4">
+       📖
+      </div>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">ค้นพบหนังสือที่เหมาะกับคุณ</h2>
+      <p class="text-gray-600">7 ข้อ ค้นหาหนังสือที่คุณควรอ่านก่อนจบปีนี้</p>
+     </div>
+     <div class="max-w-md mx-auto"><label for="player-name" class="block text-gray-700 font-medium mb-2">ชื่อของคุณ</label> <input type="text" id="player-name" class="w-full px-4 py-3 border-2 border-orange-200 rounded-lg focus:outline-none focus:border-orange-500 transition-colors" placeholder="กรุณากรอกชื่อของคุณ"> <button id="start-btn" class="w-full mt-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all transform hover:scale-105 shadow-lg"> เริ่มเล่น </button>
+     </div>
+    </div><!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden">
+     <div class="bg-white rounded-2xl shadow-xl p-8">
+      <div class="mb-6">
+       <div class="flex justify-between items-center mb-2"><span class="text-sm font-medium text-gray-600">คำถามที่ <span id="current-question">1</span>/10</span>
+       </div>
+       <div class="w-full bg-gray-200 rounded-full h-3">
+        <div id="progress-bar" class="bg-gradient-to-r from-orange-500 to-orange-600 h-3 rounded-full transition-all duration-300" style="width: 10%"></div>
+       </div>
+      </div>
+      <h3 id="question-text" class="text-xl font-semibold text-gray-800 mb-6"></h3>
+      <div id="options-container" class="space-y-3"><!-- Options will be inserted here -->
+      </div>
+     </div>
+    </div><!-- Result Screen -->
+    <div id="result-screen" class="hidden">
+     <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div class="mb-6">
+       <div class="text-6xl mb-4">
+        🎉
+       </div>
+       <h2 class="text-2xl font-bold text-gray-800 mb-2">ผลลัพธ์ของคุณ</h2>
+       <p class="text-lg text-orange-600 font-semibold" id="result-player-name"></p>
+       <h3 class="text-base text-gray-600 font-semibold">ช้อปได้เลยที่ Facebook Jamclub หรือ Line @jamclubbyjamsai</h3>
+      </div>
+      <div class="bg-gradient-to-br from-orange-50 to-white rounded-xl p-6 mb-6">
+       <div class="book-cover-container mb-4"><img id="result-book-image" alt="Book Cover">
+        <div class="book-placeholder" id="book-placeholder">
+         📚
+        </div>
+       </div>
+       <h3 id="result-book-title" class="text-xl font-bold text-gray-800 mb-2"></h3>
+       <h2 id="result-book-h2" class="text-lg font-semibold text-orange-600 mb-3"></h2>
+       <p id="result-book-description" class="text-gray-600"></p>
+      </div><button id="restart-btn" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 px-8 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all transform hover:scale-105 shadow-lg"> เล่นอีกครั้ง </button>
+     </div>
+    </div>
+   </main><!-- Footer -->
+   <footer class="bg-gray-800 text-white py-4 mt-8">
+    <div class="container mx-auto px-4 text-center">
+     <p id="footer-text" class="text-sm">พัฒนาโดย Jamclub</p>
+    </div>
+   </footer>
+  </div>
+  <script>
+        const defaultConfig = {
+            page_title: "📚 หนังสือแบบไหน ที่ใช่คุณ",
+            footer_text: "พัฒนาโดย Jamclub"
+        };
+
+        // Quiz data
+        const questions = [
+            {
+                question: "คุณชอบอ่านหนังสือในช่วงเวลาไหน?",
+                options: [
+                    { text: "ตอนเช้าก่อนเริ่มวัน", type: "A" },
+                    { text: "ตอนกลางวันพักเบรก", type: "B" },
+                    { text: "ตอนเย็นหลังเลิกงาน", type: "C" },
+                    { text: "ตอนดึกก่อนนอน", type: "D" }
+                ]
+            },
+            {
+                question: "เรื่องราวแบบไหนที่ดึงดูดคุณมากที่สุด?",
+                options: [
+                    { text: "เรื่องราวการพัฒนาตัวเอง", type: "A" },
+                    { text: "เรื่องราวผจญภัยน่าตื่นเต้น", type: "B" },
+                    { text: "เรื่องราวเบื้องลึกเบื้องหลัง", type: "C" },
+                    { text: "เรื่องราวสร้างแรงบันดาลใจ", type: "D" }
+                ]
+            },
+            {
+                question: "คุณชอบเรียนรู้เรื่องอะไร?",
+                options: [
+                    { text: "การพัฒนาตนเองและความสำเร็จ", type: "C" },
+                    { text: "การเติบโต ความเป็นมาของสิ่งต่างๆ", type: "B" },
+                    { text: "การพัฒนาตนเองและความสำเร็จ", type: "A" },
+                    { text: "จิตวิทยาและมนุษย์สัมพันธ์", type: "D" }
+                ]
+            },
+            {
+                question: "สถานที่ไหนที่คุณชอบอ่านหนังสือ?",
+                options: [
+                    { text: "ห้องสมุดหรือร้านกาแฟ", type: "A" },
+                    { text: "สวนสาธารณะกลางแจ้ง", type: "B" },
+                    { text: "บ้านในห้องสบายๆ", type: "C" },
+                    { text: "ที่ไหนก็ได้ที่เงียบสงบ", type: "D" }
+                ]
+            },
+            {
+                question: "คุณมักจะอ่านหนังสือจบใน...",
+                options: [
+                    { text: "1-2 วัน อ่านจบไว", type: "A" },
+                    { text: "1 สัปดาห์ อ่านสบายๆ", type: "B" },
+                    { text: "2-3 สัปดาห์ ค่อยๆ ซึมซับ", type: "C" },
+                    { text: "1 เดือน อ่านช้าๆ", type: "D" }
+                ]
+            },
+            {
+                question: "คุณต้องการให้หนังสือช่วยอะไร?",
+                options: [
+                    { text: "เพิ่มแรงบันดาลใจในการทำงาน", type: "A" },
+                    { text: "ผ่อนคลายและสนุกสนาน", type: "B" },
+                    { text: "ขยายความรู้ใหม่ๆ", type: "C" },
+                    { text: "เข้าใจตนเองและผู้อื่นมากขึ้น", type: "D" }
+                ]
+            },
+            {
+                question: "รูปแบบของหนังสือที่คุณชอบ?",
+                options: [
+                    { text: "มีภาพประกอบ อ่านง่าย", type: "A" },
+                    { text: "มีการเปรียบเปรย ง่ายต่อการนำไปใช้จริง", type: "C" },
+                    { text: "เชิงบรรยาย มีเรื่องเล่า", type: "B" },
+                    { text: "มี Workshop ในเล่ม", type: "D" }
+                ]
+            }
+        ];
+
+        const bookResults = {
+            A: {
+                title: "คุณเป็นคนที่มุ่งมั่นและต้องการพัฒนาตนเอง",
+                h2: "MAKE TIME เทคนิคออกแบบชีวิต คืนเวลาให้ตัวเอง",
+                image: "https://drive.google.com/thumbnail?id=1T3kkBTsqp9dQTJ0HHXr5HQFOVQ0UPb-P&sz=w1000",
+                description: "Jamclub ขอแนะนำ หนังสือที่จะช่วยให้คุณสร้างนิสัยในการบรรลุเป้าหมายได้อย่างยั่งยืน เพื่อออกแบบชีวิตในแต่ละวันของคุณด้วยตัวของคุณเอง"
+            },
+            B: {
+                title: "คุณเป็นคนชอบการผจญภัยและค้นหาความหมายของชีวิต",
+                h2: "Forget me not ไขปริศนาดอกไม้ที่ไม่มีวันลืม",
+                image: "https://drive.google.com/thumbnail?id=1UPEqlxRDSU2r6zQNhkoYNxgZiEya1kUk&sz=w1000",
+                description: "Jamclub ขอแนะนำ หนังสือที่จะพาคุณไปสู่การเดินทางที่น่าประทับใจและเต็มไปด้วยบทเรียนชีวิต"
+            },
+            C: {
+                title: "คุณเป็นคนชอบวิเคราะห์และหาความรู้ใหม่ๆ",
+                h2: "The Stories of Your Life ชีวิตนี้…คือเรื่องของเรา",
+                image: "https://drive.google.com/thumbnail?id=1EZ5du0xhcGWG-lTOy_ujwxajTjYWdibX&sz=w1000",
+                description: "Jamclub ขอแนะนำ หนังสือที่จะขยายมุมมองของคุณเกี่ยวกับการตัดสินใจ ความรู้สึก และการกระทำของมนุษย์"
+            },
+            D: {
+                title: "คุณเป็นคนที่ใส่ใจอารมณ์ความรู้สึกและชอบคิดทบทวนชีวิต",
+                h2: "ถึงฉัน ผู้เปล่งประกายที่สุดในวันนี้",
+                image: "https://drive.google.com/thumbnail?id=151CgJGRN9w5NBYICfHy6KwnyAJfcnwBl&sz=w1000",
+                description: "Jamclub ขอแนะนำ หนังสือที่จะทำให้คุณเข้าใจคุณค่าของทางเลือกในชีวิตและความหมายของความสุข"
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = { A: 0, B: 0, C: 0, D: 0 };
+        let playerName = "";
+
+        // Apps Script Configuration
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCh8qta8rJMpU022iR-i9O_Vx-pw_fSpSXW9lPP255wFF16ixbyLzZCw1pQ-ioeCf7/exec";
+
+        // Elements SDK initialization
+        async function onConfigChange(config) {
+            document.getElementById('page-title').textContent = config.page_title || defaultConfig.page_title;
+            document.getElementById('footer-text').textContent = config.footer_text || defaultConfig.footer_text;
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["page_title", config.page_title || defaultConfig.page_title],
+                    ["footer_text", config.footer_text || defaultConfig.footer_text]
+                ])
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.elementSdk && window.elementSdk.config) {
+                onConfigChange(window.elementSdk.config);
+            } else {
+                onConfigChange(defaultConfig);
+            }
+            
+            // Setup start button
+            setupStartButton();
+        });
+
+        // Start button - setup after DOM is ready
+        function setupStartButton() {
+            const startBtn = document.getElementById('start-btn');
+            if (startBtn) {
+                startBtn.addEventListener('click', function() {
+                    const nameInput = document.getElementById('player-name');
+                    playerName = nameInput.value.trim();
+
+                    if (!playerName) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'กรุณากรอกชื่อ',
+                            text: 'โปรดกรอกชื่อของคุณก่อนเริ่มเล่น',
+                            confirmButtonColor: '#f97316',
+                            confirmButtonText: 'ตกลง'
+                        });
+                        return;
+                    }
+
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('quiz-screen').classList.remove('hidden');
+                    showQuestion();
+                });
+            }
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('question-text').textContent = question.question;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left px-6 py-4 bg-gradient-to-r from-orange-50 to-white border-2 border-orange-200 rounded-lg hover:border-orange-500 hover:shadow-lg transition-all transform hover:scale-102 font-medium text-gray-700';
+                button.textContent = option.text;
+                button.addEventListener('click', () => selectAnswer(option.type));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(type) {
+            answers[type]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const resultType = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b);
+            const book = bookResults[resultType];
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('result-player-name').textContent = playerName;
+            document.getElementById('result-book-title').textContent = book.title;
+            
+            const h2Element = document.getElementById('result-book-h2');
+            if (book.h2) {
+                h2Element.textContent = book.h2;
+                h2Element.style.display = 'block';
+            } else {
+                h2Element.style.display = 'none';
+            }
+            
+            document.getElementById('result-book-description').textContent = book.description;
+            
+            // Handle book image loading
+            const bookImage = document.getElementById('result-book-image');
+            const placeholder = document.getElementById('book-placeholder');
+            
+            if (book.image) {
+                bookImage.src = book.image;
+                bookImage.onload = function() {
+                    placeholder.style.display = 'none';
+                    bookImage.style.display = 'block';
+                };
+                bookImage.onerror = function() {
+                    placeholder.style.display = 'flex';
+                    bookImage.style.display = 'none';
+                };
+            } else {
+                placeholder.style.display = 'flex';
+                bookImage.style.display = 'none';
+            }
+
+            // Save to Google Sheets using JSONP
+            saveToGoogleSheets(playerName, book.title, resultType);
+
+            // Celebration animation
+            Swal.fire({
+                icon: 'success',
+                title: 'ค้นพบหนังสือที่เหมาะกับคุณแล้ว!',
+                text: 'แคปหน้าจอผลลัพธ์ เพื่อรับสิทธิ์ส่งฟรีเมื่อช้อปกับ Jamclub',
+                confirmButtonColor: '#f97316',
+                confirmButtonText: 'ดูผลลัพธ์'
+            });
+        }
+
+        function saveToGoogleSheets(name, bookTitle, resultType) {
+            const timestamp = new Date().toLocaleString('th-TH');
+            const score = answers[resultType];
+
+            const data = {
+                name: name,
+                bookTitle: bookTitle,
+                resultType: resultType,
+                score: score,
+                timestamp: timestamp
+            };
+
+            // Create JSONP callback
+            const callbackName = 'jsonpCallback_' + Date.now();
+            window[callbackName] = function(response) {
+                console.log('Data saved successfully:', response);
+                delete window[callbackName];
+                document.getElementById(callbackName).remove();
+            };
+
+            // Create script tag for JSONP request
+            const script = document.createElement('script');
+            script.id = callbackName;
+            
+            const params = new URLSearchParams({
+                ...data,
+                callback: callbackName
+            });
+            
+            script.src = APPS_SCRIPT_URL + '?' + params.toString();
+            
+            script.onerror = function() {
+                console.error('Error saving data to Google Sheets');
+                delete window[callbackName];
+                script.remove();
+            };
+            
+            document.body.appendChild(script);
+        }
+
+        document.getElementById('restart-btn').addEventListener('click', function() {
+            currentQuestion = 0;
+            answers = { A: 0, B: 0, C: 0, D: 0 };
+            
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('player-name').value = '';
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9aa9a3fc232c7328',t:'MTc2NTE2OTQxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
+
